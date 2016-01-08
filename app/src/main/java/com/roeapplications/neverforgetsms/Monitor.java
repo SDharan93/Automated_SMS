@@ -26,5 +26,6 @@ public class Monitor extends AppCompatActivity {
         tabs = (TabLayout) findViewById(R.id.tab_layout);
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
+        tabs.setTabsFromPagerAdapter(adapter);
     }
 }

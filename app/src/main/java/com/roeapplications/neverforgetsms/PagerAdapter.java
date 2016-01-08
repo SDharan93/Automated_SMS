@@ -15,12 +15,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        MyFragment frag = new MyFragment();
+        MyFragment temp = new MyFragment();
+        MyFragment frag = temp.newInstance(position);
         return frag;
     }
 
     @Override
     public int getCount() {
         return 2;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "Tab " + (position+1);
     }
 }

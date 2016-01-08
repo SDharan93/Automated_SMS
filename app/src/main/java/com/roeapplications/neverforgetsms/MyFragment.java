@@ -13,14 +13,26 @@ import android.widget.TextView;
  */
 public class MyFragment extends Fragment{
 
+    public static final String ARG_PAGE = "arg_page";
     public MyFragment() {
 
     }
 
+    public static MyFragment newInstance(int pageNumber) {
+        MyFragment frag = new MyFragment();
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_PAGE, pageNumber);
+        frag.setArguments(arguments);
+        return frag;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Bundle arguments = getArguments();
+        int pageNumber = arguments.getInt(ARG_PAGE);
+        //int pageNumber = 0;
         TextView myText = new TextView(getActivity());
-        myText.setText("Hello I am the text inside the first tab!");
+        myText.setText("Hello I am the text inside the first tab. Page: " + pageNumber);
         myText.setGravity(Gravity.CENTER);
         return myText;
     }
