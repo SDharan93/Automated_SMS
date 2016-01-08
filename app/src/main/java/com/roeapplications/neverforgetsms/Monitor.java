@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 /**
  * Created by shane on 2016-01-08.
  */
-public class MonitorTemp extends AppCompatActivity {
+public class Monitor extends AppCompatActivity {
 
     private Toolbar options;
     private TabLayout tabs;
