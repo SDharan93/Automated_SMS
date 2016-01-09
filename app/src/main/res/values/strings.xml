@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Never Forget SMS</string>
     <string name="action_settings">Settings</string>
+    <string-array name="tabs">
+        <item>TAB 1</item>
+        <item>TAB 2</item>
+    </string-array>
 </resources>

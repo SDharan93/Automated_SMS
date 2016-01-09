@@ -20,10 +20,13 @@ public class Monitor extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.monitor);
+
         adapter = new PagerAdapter(getSupportFragmentManager());
         options = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(options);
+
         tabs = (TabLayout) findViewById(R.id.tab_layout);
+
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
         tabs.setTabsFromPagerAdapter(adapter);

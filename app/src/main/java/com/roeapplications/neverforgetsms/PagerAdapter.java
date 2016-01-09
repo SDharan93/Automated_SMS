@@ -15,9 +15,17 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        MyFragment temp = new MyFragment();
-        MyFragment frag = temp.newInstance(position);
-        return frag;
+        switch(position) {
+            case 0:
+                return new Edit();
+            case 1:
+                return new Halt();
+            default:
+                break;
+        }
+
+        //should never be hit
+        return null;
     }
 
     @Override
@@ -28,6 +36,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "Tab " + (position+1);
+        CharSequence tabName = "";
+        switch (position) {
+            case 0:
+                    tabName = "Edit";
+                    break;
+            case 1:
+                    tabName = "Halt";
+                    break;
+            default:
+                    tabName = "";
+                    break;
+        }
+        return tabName;
     }
 }
