@@ -23,6 +23,8 @@
         android:layout_height="wrap_content"
         app:tabGravity="fill"
         app:tabMode="fixed"
+        app:tabSelectedTextColor="@color/tabSelectedColor"
+        app:tabTextColor="@color/tabTextColor"
         android:background="@color/colorPrimary"/>
 
     <ProgressBar

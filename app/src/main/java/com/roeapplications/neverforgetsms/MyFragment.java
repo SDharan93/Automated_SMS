@@ -18,6 +18,7 @@ public class MyFragment extends Fragment{
 
     }
 
+    //Fragments cannot have parameters with constructors, use this as substitution
     public static MyFragment newInstance(int pageNumber) {
         MyFragment frag = new MyFragment();
         Bundle arguments = new Bundle();

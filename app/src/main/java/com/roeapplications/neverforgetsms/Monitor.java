@@ -27,5 +27,10 @@ public class Monitor extends AppCompatActivity {
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
         tabs.setTabsFromPagerAdapter(adapter);
+
+        //If the tabs are clicked, the page will change to that specific page
+        tabs.setupWithViewPager(pager);
+        //If the page is swiped to a new page, the tab will move with it
+        pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
     }
 }

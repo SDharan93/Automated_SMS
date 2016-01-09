@@ -22,6 +22,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
+        //the number of tabs in the app
         return 2;
     }
 
