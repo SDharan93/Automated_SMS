@@ -7,16 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by shane on 2016-01-09.
  */
 public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder>{
 
     private LayoutInflater inflater;
+    private List<Information> data = Collections.emptyList();
 
-
-    public RecAdapter(Context context) {
+    public RecAdapter(Context context, List<Information> data) {
         inflater = LayoutInflater.from(context);
+        this.data = data;
     }
 
     @Override
@@ -28,12 +33,13 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder>{
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
+        Information current = data.get(position);
+        holder.title.setText(current.title);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return data.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
