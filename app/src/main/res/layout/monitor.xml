@@ -13,7 +13,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/primary"
         android:minHeight="?attr/actionBarSize"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
@@ -23,9 +23,9 @@
         android:layout_height="wrap_content"
         app:tabGravity="fill"
         app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/tabSelectedColor"
-        app:tabTextColor="@color/tabTextColor"
-        android:background="@color/colorPrimary"/>
+        app:tabSelectedTextColor="@color/primary_text"
+        app:tabTextColor="@color/primary_light"
+        android:background="@color/primary"/>
 
     <ImageView
         android:id="@+id/tabImage"
