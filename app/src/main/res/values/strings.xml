@@ -5,4 +5,5 @@
         <item>TAB 1</item>
         <item>TAB 2</item>
     </string-array>
+    <string name="contact_hint">Enter Contact Name</string>
 </resources>
