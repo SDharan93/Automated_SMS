@@ -14,7 +14,7 @@ The application was originally created for the purpose of teaching fellow studen
 
 * Android Studios - IDE
 * Material Design - UI Design chosen for application
-* 
+
 ## Notes
 
 The application is still in works, a link will also be provided for the Android Session. 
