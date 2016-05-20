@@ -1,5 +1,6 @@
 package com.roeapplications.neverforgetsms;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,9 +20,12 @@ import android.widget.Toast;
  */
 public class MessageService extends Service{
     private static final String TAG = MessageService.class.getSimpleName();
+
     private Boolean mServing = false;
     private final BroadcastReceiver mReceiver = new MyReceiver();
     public Messenger mMessenger = new Messenger(new MessageHandler(this));
+
+    private Notification mNotification;
 
     @Override
     public void onCreate() {
@@ -30,6 +34,13 @@ public class MessageService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Notification.Builder notificationBuilder = new Notification.Builder(this);
+        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        notificationBuilder.setContentTitle("Never Forget SMS is running");
+        notificationBuilder.setOngoing(false);
+        mNotification = notificationBuilder.build();
+        startForeground(11, mNotification);
+
         return Service.START_NOT_STICKY;
     }
 
@@ -69,6 +80,7 @@ public class MessageService extends Service{
     public void stopService() {
         unregisterReceiver(mReceiver);
         mServing = false;
+        stopForeground(true);
     }
 
     // use this as an inner class like here or as a top-level class
@@ -95,7 +107,7 @@ public class MessageService extends Service{
                         Log.d(TAG, "senderNum: " + senderNum + "; message: " + message);
 
                         //show alert for testing
-                        //Toast.makeText(context, "senderNum: "+ senderNum + ", message: " + message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "senderNum: "+ senderNum + ", message: " + message, Toast.LENGTH_SHORT).show();
 
                     /*
                     *TODO: Make so it sends on a button click, currently it will continusouly send messages
