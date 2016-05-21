@@ -1,10 +1,11 @@
-package com.roeapplications.neverforgetsms;
+package com.roeapplications.neverforgetsms.ui;
 
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -15,7 +16,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.roeapplications.neverforgetsms.services.ActivityHandler;
+import com.roeapplications.neverforgetsms.services.MessageService;
+import com.roeapplications.neverforgetsms.R;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -25,8 +36,21 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_SMS_HANDLE_PERMISSIONS = 1;
+    public static final String PREFS_FILE = "com.roeapplications.neverforgetsms.preferences";
+    public static final String MESSAGE_KEY = "MESSAGE_KEY";
+    private static final String TIME_KEY = "TIME_KEY";
+    private static final String COUNT_KEY = "COUNT_KEY";
 
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
+
+    //private Realm mRealm;
     private Button mStartButton;
+    private Button mListButton;
+    private EditText mMessageLabel;
+    private TextView mTimeLabel;
+    private TextView mMessageCount;
+
     private Boolean mBound = false;
     private Messenger mServiceMessenger;
     private Messenger mActivityMessenger = new Messenger(new ActivityHandler(this));
@@ -109,8 +133,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setup() {
+        //mRealm = Realm.getInstance(this);
+        mSharedPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
 
         mStartButton = (Button)findViewById(R.id.startButton);
+        mListButton = (Button) findViewById(R.id.listButton);
+        mMessageLabel = (EditText) findViewById(R.id.messageLabel);
+        mTimeLabel = (TextView) findViewById(R.id.timeLabel);
+        mMessageCount = (TextView) findViewById(R.id.sentLabel);
+
+        String message = mSharedPreferences.getString(MESSAGE_KEY, "");
+        mMessageLabel.setText(message);
+
+        String timeLabel = mSharedPreferences.getString(TIME_KEY, "--");
+        mTimeLabel.setText(timeLabel);
 
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,10 +167,37 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditor.putString(MESSAGE_KEY, mMessageLabel.getText().toString());
+                mEditor.apply();
+                Toast.makeText(MainActivity.this, "Saved new message!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void changeStartButton(String text) {
         mStartButton.setText(text);
+        if(text.equals("Stop")) {
+            String time = mSharedPreferences.getString(TIME_KEY, "--");
+            if(time.equals("--")) {
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss a");
+                String formattedDate = df.format(c.getTime());
+                mTimeLabel.setText(formattedDate);
+                mEditor.putString(TIME_KEY, formattedDate);
+            }
+            else {
+                mTimeLabel.setText(time);
+            }
+        }
+        else {
+            mTimeLabel.setText("--");
+            mEditor.putString(TIME_KEY, "--");
+        }
+        mEditor.apply();
     }
 
     @Override

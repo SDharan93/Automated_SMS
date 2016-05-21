@@ -34,18 +34,20 @@
         android:gravity="center"
         android:textColor="#80ffffff" />
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/messageLabel"
-        android:text="There is no message currently selected."
         android:textSize="24sp"
         android:layout_below="@id/currentMessage"
-        tools:text="Hey I am at a meeting, I'll message when I am free!"
+        android:maxLength="100"
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:textColor="#ffffff"
-        android:layout_above="@+id/listButton" />
+        android:layout_above="@+id/listButton"
+        android:hint="Please enter a message for everyone to recieve!"
+        android:textColorHint="#80ffffff"
+        android:singleLine="false" />
 
 
     <LinearLayout
@@ -75,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="--"
-                android:id="@+id/textView3"
+                android:id="@+id/sentLabel"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
@@ -101,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="--"
-                android:id="@+id/textView5"
+                android:id="@+id/timeLabel"
                 android:layout_marginTop="12dp"
                 tools:text="12:00 PM"
                 android:textColor="#ffffff" />
@@ -111,7 +113,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CHANGE/ADD MESSAGE"
+        android:text="CHANGE MESSAGE"
         android:id="@+id/listButton"
         android:textSize="18sp"
         android:textColor="#ffffff"

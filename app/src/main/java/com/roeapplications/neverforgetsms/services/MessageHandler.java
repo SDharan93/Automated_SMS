@@ -1,4 +1,4 @@
-package com.roeapplications.neverforgetsms;
+package com.roeapplications.neverforgetsms.services;
 
 import android.os.Handler;
 import android.os.Message;

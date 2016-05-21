@@ -1,9 +1,10 @@
-package com.roeapplications.neverforgetsms;
+package com.roeapplications.neverforgetsms.services;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+
+import com.roeapplications.neverforgetsms.ui.MainActivity;
 
 /**
  * Created by shane on 19/05/16.

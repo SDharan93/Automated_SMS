@@ -1,4 +1,4 @@
-package com.roeapplications.neverforgetsms;
+package com.roeapplications.neverforgetsms.services;
 
 import android.app.Notification;
 import android.app.Service;
@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -15,11 +16,17 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.roeapplications.neverforgetsms.R;
+import com.roeapplications.neverforgetsms.ui.MainActivity;
+
 /**
  * Created by shane on 19/05/16.
  */
 public class MessageService extends Service{
     private static final String TAG = MessageService.class.getSimpleName();
+
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
 
     private Boolean mServing = false;
     private final BroadcastReceiver mReceiver = new MyReceiver();
@@ -30,6 +37,8 @@ public class MessageService extends Service{
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate: MessageService");
+        mSharedPreferences = getSharedPreferences(MainActivity.PREFS_FILE, Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
     }
 
     @Override
@@ -104,11 +113,12 @@ public class MessageService extends Service{
                         String senderNum = phoneNumber;
                         String message = currentMessage.getDisplayMessageBody();
 
-                        Log.d(TAG, "senderNum: " + senderNum + "; message: " + message);
-
-                        //show alert for testing
-                        Toast.makeText(context, "senderNum: "+ senderNum + ", message: " + message, Toast.LENGTH_SHORT).show();
-
+                        String outgoingMessage = mSharedPreferences.getString(MainActivity.MESSAGE_KEY, "");
+                        //Log.d(TAG, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage);
+                        //show alert for testing if outgoing message is present
+                        if (!outgoingMessage.equals("")) {
+                            Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage, Toast.LENGTH_SHORT).show();
+                        }
                     /*
                     *TODO: Make so it sends on a button click, currently it will continusouly send messages
                     try {
