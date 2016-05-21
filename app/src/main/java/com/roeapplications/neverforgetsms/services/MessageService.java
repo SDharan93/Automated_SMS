@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.roeapplications.neverforgetsms.R;
 import com.roeapplications.neverforgetsms.ui.MainActivity;
 
+import java.util.HashMap;
+
 /**
  * Created by shane on 19/05/16.
  */
@@ -31,14 +33,17 @@ public class MessageService extends Service{
     private Boolean mServing = false;
     private final BroadcastReceiver mReceiver = new MyReceiver();
     public Messenger mMessenger = new Messenger(new MessageHandler(this));
-
+    private HashMap mMessageMap;
     private Notification mNotification;
+    private int mCounter;
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate: MessageService");
         mSharedPreferences = getSharedPreferences(MainActivity.PREFS_FILE, Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
+        mMessageMap = new HashMap();
+        mCounter = 0;
     }
 
     @Override
@@ -105,19 +110,24 @@ public class MessageService extends Service{
                     final Object[] pdusObj = (Object[]) bundle.get("pdus");
                     Log.d(TAG, "In OnRecieve");
                     for (int i = 0; i < pdusObj.length; i++) {
-
                         SmsMessage[] msgs = Telephony.Sms.Intents.getMessagesFromIntent(intent);
                         SmsMessage currentMessage = msgs[i];
                         String phoneNumber = currentMessage.getDisplayOriginatingAddress();
-
                         String senderNum = phoneNumber;
                         String message = currentMessage.getDisplayMessageBody();
-
                         String outgoingMessage = mSharedPreferences.getString(MainActivity.MESSAGE_KEY, "");
+
                         //Log.d(TAG, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage);
                         //show alert for testing if outgoing message is present
-                        if (!outgoingMessage.equals("")) {
-                            Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage, Toast.LENGTH_SHORT).show();
+                        if(!outgoingMessage.equals("")) {
+                            if(!mMessageMap.containsKey(senderNum)) {
+                                mCounter = mSharedPreferences.getInt(MainActivity.COUNT_KEY, 0);
+                                mCounter++;
+                                mEditor.putInt(MainActivity.COUNT_KEY, mCounter);
+                                mEditor.apply();
+                                Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage, Toast.LENGTH_SHORT).show();
+                            }
+                            addMap(senderNum);
                         }
                     /*
                     *TODO: Make so it sends on a button click, currently it will continusouly send messages
@@ -136,6 +146,16 @@ public class MessageService extends Service{
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Exception smsReceive");
+            }
+        }
+
+        private void addMap(String num) {
+            if(mMessageMap.containsKey(num)) {
+                int count = (int)mMessageMap.get(num) + 1;
+                mMessageMap.put(num, count);
+            }
+            else {
+                mMessageMap.put(num, 1);
             }
         }
 

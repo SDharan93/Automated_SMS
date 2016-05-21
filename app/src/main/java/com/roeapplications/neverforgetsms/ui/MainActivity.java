@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREFS_FILE = "com.roeapplications.neverforgetsms.preferences";
     public static final String MESSAGE_KEY = "MESSAGE_KEY";
     private static final String TIME_KEY = "TIME_KEY";
-    private static final String COUNT_KEY = "COUNT_KEY";
+    public static final String COUNT_KEY = "COUNT_KEY";
 
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
@@ -149,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
         String timeLabel = mSharedPreferences.getString(TIME_KEY, "--");
         mTimeLabel.setText(timeLabel);
 
+        int count = mSharedPreferences.getInt(COUNT_KEY, 0);
+        mMessageCount.setText(count + "");
+
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,22 +185,33 @@ public class MainActivity extends AppCompatActivity {
         mStartButton.setText(text);
         if(text.equals("Stop")) {
             String time = mSharedPreferences.getString(TIME_KEY, "--");
+            int count = mSharedPreferences.getInt(COUNT_KEY, 0);
             if(time.equals("--")) {
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss a");
                 String formattedDate = df.format(c.getTime());
                 mTimeLabel.setText(formattedDate);
+                mMessageCount.setText(0 + "");
+                mEditor.putInt(MESSAGE_KEY, 0);
                 mEditor.putString(TIME_KEY, formattedDate);
             }
             else {
+                mMessageCount.setText(count + "");
                 mTimeLabel.setText(time);
             }
         }
         else {
             mTimeLabel.setText("--");
             mEditor.putString(TIME_KEY, "--");
+            mMessageCount.setText("--");
+            mEditor.putInt(COUNT_KEY, 0);
         }
         mEditor.apply();
+    }
+
+    public void updateCount() {
+        int count = mSharedPreferences.getInt(COUNT_KEY, 0);
+        mMessageCount.setText(count + "");
     }
 
     @Override
