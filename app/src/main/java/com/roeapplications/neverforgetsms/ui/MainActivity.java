@@ -1,9 +1,11 @@
 package com.roeapplications.neverforgetsms.ui;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,6 +14,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +35,7 @@ import java.util.List;
 /**
  * Created by shane on 2016-01-08.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_SMS_HANDLE_PERMISSIONS = 1;
@@ -50,8 +53,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText mMessageLabel;
     private TextView mTimeLabel;
     private TextView mMessageCount;
+    private SwipeRefreshLayout mSwipleLayout;
 
     private Boolean mBound = false;
+    private Boolean mRunning = false;
+    private Boolean mReceiverIsRegistered = false;
+
     private Messenger mServiceMessenger;
     private Messenger mActivityMessenger = new Messenger(new ActivityHandler(this));
     private ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -74,6 +81,19 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             mBound = false;
         }
+    };
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            int count = intent.getIntExtra("Count", 0);
+            mMessageCount.setText(count + "");
+            mEditor.putInt(COUNT_KEY, count);
+            mEditor.apply();
+            Log.d(TAG, "Count is now: " + count);
+        }
+        // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     };
 
     @Override
@@ -142,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
         mMessageLabel = (EditText) findViewById(R.id.messageLabel);
         mTimeLabel = (TextView) findViewById(R.id.timeLabel);
         mMessageCount = (TextView) findViewById(R.id.sentLabel);
+        mSwipleLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipleLayout.setOnRefreshListener(this);
 
         String message = mSharedPreferences.getString(MESSAGE_KEY, "");
         mMessageLabel.setText(message);
@@ -179,6 +201,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Saved new message!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        if(!mReceiverIsRegistered) {
+            registerReciever();
+        }
     }
 
     public void changeStartButton(String text) {
@@ -192,12 +218,14 @@ public class MainActivity extends AppCompatActivity {
                 String formattedDate = df.format(c.getTime());
                 mTimeLabel.setText(formattedDate);
                 mMessageCount.setText(0 + "");
-                mEditor.putInt(MESSAGE_KEY, 0);
+                mEditor.putInt(COUNT_KEY, 0);
                 mEditor.putString(TIME_KEY, formattedDate);
+                mRunning = true;
             }
             else {
                 mMessageCount.setText(count + "");
                 mTimeLabel.setText(time);
+                mRunning = true;
             }
         }
         else {
@@ -205,13 +233,14 @@ public class MainActivity extends AppCompatActivity {
             mEditor.putString(TIME_KEY, "--");
             mMessageCount.setText("--");
             mEditor.putInt(COUNT_KEY, 0);
+            mRunning = false;
         }
         mEditor.apply();
     }
 
-    public void updateCount() {
-        int count = mSharedPreferences.getInt(COUNT_KEY, 0);
-        mMessageCount.setText(count + "");
+    private void updateCount() {
+        Log.d(TAG, "count on update: " + mSharedPreferences.getInt(COUNT_KEY, 0) + " package name: " + MessageService.PACKAGE);
+        mMessageCount.setText(mSharedPreferences.getInt(COUNT_KEY, 0) + "");
     }
 
     @Override
@@ -222,11 +251,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(!mReceiverIsRegistered) {
+            registerReciever();
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if(mBound) {
             unbindService(mServiceConnection);
             mBound = false;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (mRunning) {
+            updateCount();
+        }
+        else {
+            mMessageCount.setText("--");
+        }
+        mSwipleLayout.setRefreshing(false);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mReceiverIsRegistered) {
+            unregisterReceiver(mMessageReceiver);
+            mReceiverIsRegistered = false;
+        }
+    }
+
+    private void registerReciever() {
+        registerReceiver(mMessageReceiver, new IntentFilter(MessageService.PACKAGE));
+        mReceiverIsRegistered = true;
+        Log.d(TAG, "Registered the reciever");
     }
 }

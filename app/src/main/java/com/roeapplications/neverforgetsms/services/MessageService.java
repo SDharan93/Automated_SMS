@@ -1,5 +1,6 @@
 package com.roeapplications.neverforgetsms.services;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -12,6 +13,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.provider.Telephony;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import java.util.HashMap;
  */
 public class MessageService extends Service{
     private static final String TAG = MessageService.class.getSimpleName();
+    public static final String PACKAGE = "com.roeapplications.neverforgetsms.services";
 
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
@@ -35,15 +38,15 @@ public class MessageService extends Service{
     public Messenger mMessenger = new Messenger(new MessageHandler(this));
     private HashMap mMessageMap;
     private Notification mNotification;
-    private int mCounter;
+    public int mCounter = 0;
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate: MessageService");
-        mSharedPreferences = getSharedPreferences(MainActivity.PREFS_FILE, Context.MODE_PRIVATE);
+        //mSharedPreferences = getSharedPreferences(MainActivity.PREFS_FILE, Context.MODE_PRIVATE);
+        mSharedPreferences = getApplicationContext().getSharedPreferences(MainActivity.PREFS_FILE, Activity.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         mMessageMap = new HashMap();
-        mCounter = 0;
     }
 
     @Override
@@ -99,6 +102,13 @@ public class MessageService extends Service{
 
     // use this as an inner class like here or as a top-level class
     public class MyReceiver extends BroadcastReceiver {
+        private void sendMessageToActivity(int count) {
+            Intent intent = new Intent("NeverForgetSMSCustomIntent");
+            intent.setAction(PACKAGE);
+            // You can also include some extra data.
+            intent.putExtra("Count", count);
+            sendBroadcast(intent);
+        }
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -116,16 +126,12 @@ public class MessageService extends Service{
                         String senderNum = phoneNumber;
                         String message = currentMessage.getDisplayMessageBody();
                         String outgoingMessage = mSharedPreferences.getString(MainActivity.MESSAGE_KEY, "");
-
-                        //Log.d(TAG, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage);
-                        //show alert for testing if outgoing message is present
+                        Log.d(TAG, "Outgoing: " + outgoingMessage);
                         if(!outgoingMessage.equals("")) {
                             if(!mMessageMap.containsKey(senderNum)) {
-                                mCounter = mSharedPreferences.getInt(MainActivity.COUNT_KEY, 0);
                                 mCounter++;
-                                mEditor.putInt(MainActivity.COUNT_KEY, mCounter);
-                                mEditor.apply();
-                                Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage, Toast.LENGTH_SHORT).show();
+                                sendMessageToActivity(mCounter);
+                                Log.d(TAG, "senderNum: " + senderNum + ", message: " + message + ", Outgoing: " + outgoingMessage + " Counter:" + mCounter);
                             }
                             addMap(senderNum);
                         }
