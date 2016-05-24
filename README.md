@@ -1,6 +1,10 @@
 # Automated SMS
 
-Android application that helps "bad texters" reply to SMS messages automatically. Users can input personal messages for specific contacts and write default messages for everyone else. If the user does not reply to SMS messages after a specified amount of time, the application will reply for them. 
+Android application that helps "bad texters" reply to SMS messages automatically. Users can input messages that will be sent as a response to all incoming text messages.
+
+## Motivation 
+
+I made this application to let help notify my friends and family when I am busy studying, playing video games or occupied driving and cannot reply to their texts immediately. By having an automated system handle the outgoing messages, I can focus on the task at hand without any interruptions. 
 
 ### Prerequisities
 
@@ -12,7 +16,3 @@ Android application that helps "bad texters" reply to SMS messages automatically
 
 * Android Studios - IDE
 * Material Design - UI Design chosen for application
-
-## Notes
-
-The application is still in works, a link will also be provided for the Android Session. 
